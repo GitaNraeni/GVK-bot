@@ -40,3 +40,42 @@
 ```bash
 git clone https://github.com/username/GVK-bot.git
 cd GVK-bot
+
+2. Install Dependency
+
+npm install
+
+3. Setup .env
+
+Buat file .env:
+
+TOKEN=YOUR_DISCORD_BOT_TOKEN
+
+4. Setup Config
+
+Edit file config.json:
+
+{
+  "mediaReaction": "❤️",
+  "textReaction": "💬"
+}
+
+5. Jalankan Bot
+
+node index.js
+
+
+---
+
+📂 Struktur File
+
+├── index.js
+├── config.json
+├── media_channels.json
+├── text_channels.json
+├── .env
+├── package.json
+└── README.md
+
+---
+Author: Gita Nuraeni
