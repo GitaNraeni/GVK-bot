@@ -42,18 +42,18 @@ git clone https://github.com/username/GVK-bot.git
 cd GVK-bot
 ```
 
-###2. Install Dependency
+### 2. Install Dependency
 ```bash
 npm install
 ```
 
-3. Setup .env
+### 3. Setup .env
 Buat file .env:
 ```bash
 TOKEN=YOUR_DISCORD_BOT_TOKEN
 ```
 
-4. Setup Config
+### 4. Setup Config
 Edit file config.json:
 ```bash
 {
@@ -62,7 +62,7 @@ Edit file config.json:
 }
 ```
 
-5. Jalankan Bot
+### 5. Jalankan Bot
 ```bash
 node index.js
 ```
@@ -82,3 +82,5 @@ node index.js
 ---
 
 **Author:** [GITAZA](https://discord.com/users/1219604670054404188)
+
+**Invite Bot:** [Klik di sini](https://discord.com/oauth2/authorize?client_id=1349536671359565884&permissions=8&integration_type=0&scope=bot+applications.commands)
