@@ -1,48 +1,42 @@
-# GVK Bot - Simple Discord Bot
+# GVK Bot - Discord Media & Text Manager
 
-GVK Bot adalah bot Discord sederhana yang dibuat untuk membantu mengelola server dengan beberapa fitur utama yang berguna namun tetap ringan dan simple.
+![Node.js](https://img.shields.io/badge/Node.js-18.x-brightgreen)
+![Discord.js](https://img.shields.io/badge/discord.js-v14-blue)
+![License](https://img.shields.io/badge/license-MIT-yellow)
 
-## Fitur Utama
-1. **Auto Thread**
-   - Membuat thread secara otomatis di channel tertentu setiap kali ada pesan baru.
-
-2. **Media / AutoText Filter**
-   - Mengatur channel hanya menerima media (gambar, video) atau teks saja sesuai pengaturan.
-
-3. **Set Status Bot**
-   - Mengubah status bot secara langsung melalui perintah.
-   - Pilihan status: Playing, Watching, Listening, dan Competing.
-
-## Cara Penggunaan
-### 1. Clone Repository
-```bash
-git clone https://github.com/GitaNraeni/GVK-bot.git
-
-2. Install Dependencies
-
-npm install
-
-3. Konfigurasi Token
-
-Buat file .env lalu masukkan token bot Discord-mu:
-
-TOKEN=YOUR_DISCORD_BOT_TOKEN
-
-4. Jalankan Bot
-
-node index.js
-
-Catatan Tambahan
-
-Bot ini cocok untuk server komunitas yang membutuhkan sistem auto-thread dan filter media.
-
-Source code simpel, mudah dipahami, dan bisa dikembangkan lagi sesuai kebutuhan.
-
-
+**GVK Bot** adalah bot Discord sederhana untuk mengatur channel media dan teks secara otomatis, dilengkapi fitur auto-thread dan custom status bot.
 
 ---
 
-Developer: Gita Nuraeni
+## ✨ Fitur Utama
+- **Auto Thread:**  
+  Otomatis membuat thread dari pesan yang masuk di channel yang diatur.
+  
+- **Media Only Channel:**  
+  Hanya menerima gambar/video, pesan teks akan dihapus otomatis.
 
-Mau gua tambahin badge atau preview fitur gak? Atau udah cukup segini?
+- **Text Only Channel:**  
+  Hanya menerima teks, pesan media akan dihapus otomatis.
 
+- **Auto Reaction:**  
+  Memberi reaksi otomatis sesuai mode channel.
+
+- **Set Bot Status:**  
+  Ubah status bot secara live lewat slash command.
+
+---
+
+## 📜 Command List
+| Command            | Deskripsi                                      |
+|--------------------|-----------------------------------------------|
+| `/mediachannel on/off` | Mengaktifkan atau menonaktifkan mode media di channel. |
+| `/textchannel on/off`  | Mengaktifkan atau menonaktifkan mode teks di channel. |
+| `/setstatus`          | Mengatur status bot (playing, watching, listening, streaming, competing). |
+
+---
+
+## 🔧 Cara Install & Run
+### 1. Clone Repository
+```bash
+git clone https://github.com/username/GVK-bot.git
+cd GVK-bot
