@@ -38,7 +38,7 @@
 ## 🔧 Cara Install & Run
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/username/GVK-bot.git
+git clone https://github.com/GitaNraeni/GVK-bot.git
 cd GVK-bot
 ```
 
