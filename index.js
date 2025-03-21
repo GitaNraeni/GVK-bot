@@ -83,24 +83,29 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
 
-  // /setstatus
-  if (interaction.commandName === 'setstatus') {
-    const activity = interaction.options.getString('activity');
-    const text = interaction.options.getString('text');
-
-    let type;
-    switch (activity) {
-      case 'playing': type = ActivityType.Playing; break;
-      case 'watching': type = ActivityType.Watching; break;
-      case 'listening': type = ActivityType.Listening; break;
-      case 'streaming': type = ActivityType.Streaming; break;
-      case 'competing': type = ActivityType.Competing; break;
-      default: type = ActivityType.Playing;
-    }
-
-    client.user.setActivity(text, { type });
-    await interaction.reply(`✅ Status bot diubah menjadi **${activity} ${text}**`);
+// /setstatus (Hanya Owner yang bisa pakai)
+if (interaction.commandName === 'setstatus') {
+  const ownerId = '1219604670054404188'; // ID Discord lu
+  if (interaction.user.id !== ownerId) {
+    return interaction.reply({ content: '❌ Lu bukan owner, gak bisa ubah status bot!', ephemeral: true });
   }
+
+  const activity = interaction.options.getString('activity');
+  const text = interaction.options.getString('text');
+
+  let type;
+  switch (activity) {
+    case 'playing': type = ActivityType.Playing; break;
+    case 'watching': type = ActivityType.Watching; break;
+    case 'listening': type = ActivityType.Listening; break;
+    case 'streaming': type = ActivityType.Streaming; break;
+    case 'competing': type = ActivityType.Competing; break;
+    default: type = ActivityType.Playing;
+  }
+
+  client.user.setActivity(text, { type });
+  await interaction.reply(`✅ Status bot diubah menjadi **${activity} ${text}**`);
+}
 });
 
 client.login(process.env.TOKEN);
