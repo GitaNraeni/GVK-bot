@@ -5,29 +5,38 @@ const commands = [
   new SlashCommandBuilder()
     .setName('mediachannel')
     .setDescription('Aktifkan/Nonaktifkan Media Only Mode')
-    .addStringOption(option =>
-      option.setName('mode').setDescription('on/off').setRequired(true)),
+    .addStringOption(option => option.setName('mode').setDescription('on/off').setRequired(true)),
 
   new SlashCommandBuilder()
     .setName('textchannel')
     .setDescription('Aktifkan/Nonaktifkan Text Only Mode')
-    .addStringOption(option =>
-      option.setName('mode').setDescription('on/off').setRequired(true)),
+    .addStringOption(option => option.setName('mode').setDescription('on/off').setRequired(true)),
 
   new SlashCommandBuilder()
     .setName('setstatus')
     .setDescription('Ubah status bot')
-    .addStringOption(option =>
-      option.setName('activity').setDescription('Activity type').setRequired(true)
-        .addChoices(
-          { name: 'Playing', value: 'playing' },
-          { name: 'Watching', value: 'watching' },
-          { name: 'Listening', value: 'listening' },
-          { name: 'Streaming', value: 'streaming' },
-          { name: 'Competing', value: 'competing' }
-        ))
-    .addStringOption(option =>
-      option.setName('text').setDescription('Isi status').setRequired(true))
+    .addStringOption(option => option.setName('activity').setDescription('Activity type').setRequired(true)
+      .addChoices(
+        { name: 'Playing', value: 'playing' },
+        { name: 'Watching', value: 'watching' },
+        { name: 'Listening', value: 'listening' },
+        { name: 'Streaming', value: 'streaming' },
+        { name: 'Competing', value: 'competing' }
+      ))
+    .addStringOption(option => option.setName('text').setDescription('Isi status').setRequired(true)),
+
+  new SlashCommandBuilder()
+    .setName('ping')
+    .setDescription('Cek latency bot'),
+
+  new SlashCommandBuilder()
+    .setName('help')
+    .setDescription('Liat daftar command bot'),
+
+  new SlashCommandBuilder()
+    .setName('afk')
+    .setDescription('Set status AFK')
+    .addStringOption(option => option.setName('alasan').setDescription('Masukkan alasan AFK').setRequired(false))
 ]
   .map(command => command.toJSON());
 

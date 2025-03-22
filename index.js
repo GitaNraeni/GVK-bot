@@ -1,11 +1,12 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, Partials, Events, ActivityType } = require('discord.js');
+const { Client, GatewayIntentBits, Partials, Events, ActivityType, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 
 // Load Config & Data
 const config = JSON.parse(fs.readFileSync('./config.json'));
 let mediaData = JSON.parse(fs.readFileSync('./media_channels.json'));
 let textData = JSON.parse(fs.readFileSync('./text_channels.json'));
+let afkData = {}; // AFK data disimpan di memory, bisa lu simpen di file kalau mau
 
 const client = new Client({
   intents: [
@@ -20,9 +21,27 @@ client.once(Events.ClientReady, () => {
   console.log(`✅ Bot aktif sebagai ${client.user.tag}`);
 });
 
-// Auto Thread & Reaction System
+// Auto Thread & Reaction System + AFK Auto Reset
 client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot || !message.guild) return;
+
+  // AFK Reset
+  if (afkData[message.author.id]) {
+    try {
+      await message.member.setNickname(message.member.displayName.replace('[AFK] ', ''));
+    } catch {}
+    delete afkData[message.author.id];
+    message.reply('✅ Status AFK lu udah gue hapus karena lu aktif lagi.');
+  }
+
+  // Cek kalo mention orang AFK
+  if (message.mentions.users.size > 0) {
+    message.mentions.users.forEach(user => {
+      if (afkData[user.id]) {
+        message.channel.send(`${user.tag} lagi AFK: **${afkData[user.id].reason}**`);
+      }
+    });
+  }
 
   // Media Only Mode
   if (mediaData[message.channel.id]) {
@@ -55,7 +74,7 @@ client.on(Events.MessageCreate, async (message) => {
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
-  // /mediachannel on/off
+  // /mediachannel
   if (interaction.commandName === 'mediachannel') {
     const mode = interaction.options.getString('mode');
     if (mode === 'on') {
@@ -69,7 +88,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
 
-  // /textchannel on/off
+  // /textchannel
   if (interaction.commandName === 'textchannel') {
     const mode = interaction.options.getString('mode');
     if (mode === 'on') {
@@ -83,29 +102,64 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
 
-// /setstatus (Hanya Owner yang bisa pakai)
-if (interaction.commandName === 'setstatus') {
-  const ownerId = '1219604670054404188'; // ID Discord lu
-  if (interaction.user.id !== ownerId) {
-    return interaction.reply({ content: '❌ Lu bukan owner, gak bisa ubah status bot!', ephemeral: true });
+  // /setstatus
+  if (interaction.commandName === 'setstatus') {
+    const ownerId = '1219604670054404188';
+    if (interaction.user.id !== ownerId) {
+      return interaction.reply({ content: '❌ Lu bukan owner, gak bisa ubah status bot!', ephemeral: true });
+    }
+
+    const activity = interaction.options.getString('activity');
+    const text = interaction.options.getString('text');
+
+    let type;
+    switch (activity) {
+      case 'playing': type = ActivityType.Playing; break;
+      case 'watching': type = ActivityType.Watching; break;
+      case 'listening': type = ActivityType.Listening; break;
+      case 'streaming': type = ActivityType.Streaming; break;
+      case 'competing': type = ActivityType.Competing; break;
+      default: type = ActivityType.Playing;
+    }
+
+    client.user.setActivity(text, { type });
+    await interaction.reply(`✅ Status bot diubah jadi **${activity} ${text}**`);
   }
 
-  const activity = interaction.options.getString('activity');
-  const text = interaction.options.getString('text');
-
-  let type;
-  switch (activity) {
-    case 'playing': type = ActivityType.Playing; break;
-    case 'watching': type = ActivityType.Watching; break;
-    case 'listening': type = ActivityType.Listening; break;
-    case 'streaming': type = ActivityType.Streaming; break;
-    case 'competing': type = ActivityType.Competing; break;
-    default: type = ActivityType.Playing;
+  // /ping
+  if (interaction.commandName === 'ping') {
+    await interaction.reply(`🏓 Pong! Latency: **${client.ws.ping}ms**`);
   }
 
-  client.user.setActivity(text, { type });
-  await interaction.reply(`✅ Status bot diubah menjadi **${activity} ${text}**`);
-}
+  // /help
+  if (interaction.commandName === 'help') {
+    const embed = new EmbedBuilder()
+      .setTitle('📜 Daftar Command')
+      .setColor('Blue')
+      .setDescription(`
+**/mediachannel [on/off]** - Aktif/Nonaktif Media Only Mode
+**/textchannel [on/off]** - Aktif/Nonaktif Text Only Mode
+**/setstatus** - Ubah status bot (Owner Only)
+**/afk [alasan]** - Set AFK status
+**/ping** - Cek latency bot
+**/help** - Liat daftar command
+      `)
+      .setFooter({ text: 'GVK Bot' });
+
+    await interaction.reply({ embeds: [embed] });
+  }
+
+  // /afk
+  if (interaction.commandName === 'afk') {
+    const reason = interaction.options.getString('alasan') || 'Lagi AFK';
+    afkData[interaction.user.id] = { reason };
+
+    try {
+      await interaction.member.setNickname(`[AFK] ${interaction.member.displayName}`);
+    } catch {}
+
+    await interaction.reply(`✅ Status AFK lu udah gue set: **${reason}**`);
+  }
 });
 
 client.login(process.env.TOKEN);
