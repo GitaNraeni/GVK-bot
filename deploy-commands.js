@@ -36,7 +36,16 @@ const commands = [
   new SlashCommandBuilder()
     .setName('afk')
     .setDescription('Set status AFK')
-    .addStringOption(option => option.setName('alasan').setDescription('Masukkan alasan AFK').setRequired(false))
+    .addStringOption(option => option.setName('alasan').setDescription('Masukkan alasan AFK').setRequired(false)),
+
+  new SlashCommandBuilder()
+    .setName('clear')
+    .setDescription('Hapus beberapa pesan di channel')
+    .addIntegerOption(option => 
+      option.setName('jumlah')
+        .setDescription('Jumlah pesan yang mau dihapus (max 100)')
+        .setRequired(true)
+    ),
 ]
   .map(command => command.toJSON());
 

@@ -143,6 +143,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 **/afk [alasan]** - Set AFK status
 **/ping** - Cek latency bot
 **/help** - Liat daftar command
+**/clear [jumlah]** - Hapus beberapa pesan
       `)
       .setFooter({ text: 'GVK Bot' });
 
@@ -159,6 +160,20 @@ client.on(Events.InteractionCreate, async (interaction) => {
     } catch {}
 
     await interaction.reply(`✅ Status AFK lu udah gue set: **${reason}**`);
+  }
+
+  // /clear
+  if (interaction.commandName === 'clear') {
+    const amount = interaction.options.getInteger('jumlah');
+    if (!interaction.member.permissions.has('ManageMessages')) {
+      return interaction.reply({ content: '❌ Lu butuh permission **Manage Messages** buat pake command ini.', ephemeral: true });
+    }
+    if (!amount || amount <= 0 || amount > 100) {
+      return interaction.reply({ content: '❌ Masukin jumlah antara 1 sampai 100!', ephemeral: true });
+    }
+
+    await interaction.channel.bulkDelete(amount, true).catch(() => {});
+    await interaction.reply({ content: `✅ ${amount} pesan berhasil dihapus.`, ephemeral: true });
   }
 });
 
