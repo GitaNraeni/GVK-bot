@@ -46,15 +46,29 @@ const commands = [
         .setDescription('Jumlah pesan yang mau dihapus (max 100)')
         .setRequired(true)
     ),
+
+  new SlashCommandBuilder()
+    .setName('say')
+    .setDescription('Buat bot kirim pesan')
+    .addStringOption(option => option.setName('text').setDescription('Isi pesan').setRequired(true)),
+
+  new SlashCommandBuilder()
+    .setName('addrole')
+    .setDescription('Tambah role ke user')
+    .addUserOption(option => option.setName('target').setDescription('User yang mau dikasih role').setRequired(true))
+    .addRoleOption(option => option.setName('role').setDescription('Role yang mau dikasih').setRequired(true)),
 ]
-  .map(command => command.toJSON());
+.map(command => command.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 (async () => {
   try {
-    console.log('Registering commands...');
-    await rest.put(Routes.applicationCommands('1349536671359565884'), { body: commands });
+    console.log('🚀 Registering slash commands...');
+    await rest.put(
+      Routes.applicationCommands('1349536671359565884'), // Ganti dengan bot client_id lu
+      { body: commands }
+    );
     console.log('✅ Commands registered!');
   } catch (error) {
     console.error(error);

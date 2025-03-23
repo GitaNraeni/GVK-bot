@@ -1,12 +1,12 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, Partials, Events, ActivityType, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, Partials, Events, ActivityType, EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const fs = require('fs');
 
 // Load Config & Data
 const config = JSON.parse(fs.readFileSync('./config.json'));
 let mediaData = JSON.parse(fs.readFileSync('./media_channels.json'));
 let textData = JSON.parse(fs.readFileSync('./text_channels.json'));
-let afkData = {}; // AFK data disimpan di memory, bisa lu simpen di file kalau mau
+let afkData = {};
 
 const client = new Client({
   intents: [
@@ -27,9 +27,7 @@ client.on(Events.MessageCreate, async (message) => {
 
   // AFK Reset
   if (afkData[message.author.id]) {
-    try {
-      await message.member.setNickname(message.member.displayName.replace('[AFK] ', ''));
-    } catch {}
+    try { await message.member.setNickname(message.member.displayName.replace('[AFK] ', '')); } catch {}
     delete afkData[message.author.id];
     message.reply('✅ Status AFK lu udah gue hapus karena lu aktif lagi.');
   }
@@ -111,7 +109,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     const activity = interaction.options.getString('activity');
     const text = interaction.options.getString('text');
-
     let type;
     switch (activity) {
       case 'playing': type = ActivityType.Playing; break;
@@ -144,6 +141,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
 **/ping** - Cek latency bot
 **/help** - Liat daftar command
 **/clear [jumlah]** - Hapus beberapa pesan
+**/say [text]** - Kirim pesan sebagai bot
+**/addrole [target] [role]** - Tambahin role ke member
       `)
       .setFooter({ text: 'GVK Bot' });
 
@@ -154,11 +153,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   if (interaction.commandName === 'afk') {
     const reason = interaction.options.getString('alasan') || 'Lagi AFK';
     afkData[interaction.user.id] = { reason };
-
-    try {
-      await interaction.member.setNickname(`[AFK] ${interaction.member.displayName}`);
-    } catch {}
-
+    try { await interaction.member.setNickname(`[AFK] ${interaction.member.displayName}`); } catch {}
     await interaction.reply(`✅ Status AFK lu udah gue set: **${reason}**`);
   }
 
@@ -171,9 +166,34 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (!amount || amount <= 0 || amount > 100) {
       return interaction.reply({ content: '❌ Masukin jumlah antara 1 sampai 100!', ephemeral: true });
     }
-
     await interaction.channel.bulkDelete(amount, true).catch(() => {});
     await interaction.reply({ content: `✅ ${amount} pesan berhasil dihapus.`, ephemeral: true });
+  }
+
+  // /say
+  if (interaction.commandName === 'say') {
+    const text = interaction.options.getString('text');
+    await interaction.reply({ content: '✅ Pesan berhasil dikirim.', ephemeral: true });
+    await interaction.channel.send(text);
+  }
+
+  // /addrole
+  if (interaction.commandName === 'addrole') {
+    const target = interaction.options.getMember('target');
+    const role = interaction.options.getRole('role');
+
+    if (!interaction.member.permissions.has('ManageRoles')) {
+      return interaction.reply({ content: '❌ Lu butuh permission **Manage Roles** buat pake command ini.', ephemeral: true });
+    }
+    if (!interaction.guild.members.me.permissions.has('ManageRoles')) {
+      return interaction.reply({ content: '❌ Bot butuh permission **Manage Roles**.', ephemeral: true });
+    }
+    if (role.position >= interaction.guild.members.me.roles.highest.position) {
+      return interaction.reply({ content: '❌ Role itu posisinya lebih tinggi dari bot.', ephemeral: true });
+    }
+
+    await target.roles.add(role).catch(() => {});
+    await interaction.reply(`✅ Berhasil nambahin role ${role} ke ${target.user.tag}`);
   }
 });
 
